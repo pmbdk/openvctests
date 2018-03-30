@@ -34,7 +34,7 @@ pts = deque(maxlen=args["buffer"])
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
 camera.resolution = (640, 480)
-camera.framerate = 60
+camera.framerate = 20
 #camera.brightness = 70
 camera.iso = 400
 
@@ -46,8 +46,8 @@ counter = 0
 saveCounter = 0
 
 # fourcc = cv2.cv.CV_FOURCC(*"XVID")
-motion_filename = "testvid.avi"
-motion_file = cv2.VideoWriter(motion_filename, cv2.VideoWriter_fourcc(*'MJPG'), 1.0, camera.resolution)
+motion_filename = "/run/user/1000/testvid.avi"
+motion_file = cv2.VideoWriter(motion_filename, cv2.VideoWriter_fourcc(*'MJPG'), camera.framerate, camera.resolution)
 
 # capture frames from the camera
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
@@ -112,8 +112,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	# show the frame
 	# Limit frame shown
 	# if ( counter & 0x07 ) == 0:
-        cv2.imshow("Frame", image)
-        motion_file.write(image)
+	# cv2.imshow("Frame", image)
+	motion_file.write(image)
 	key = cv2.waitKey(1) & 0xFF
 
 	# clear the stream in preparation for the next frame
@@ -121,6 +121,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 	# if the `q` key was pressed, break from the loop
 	if key == ord("q"):
+		break
+	if counter == 100:
 		break
 	if key == ord("s"):
 		cv2.imwrite('testimg' + str( saveCounter ) + '.png', image )
