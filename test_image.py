@@ -16,8 +16,17 @@ ap.add_argument("-b", "--buffer", type=int, default=64,
 	help="max buffer size")
 args = vars(ap.parse_args())
 
-greenLower = (103/2-10, 150, 150)
-greenUpper = (103/2+10, 255, 255)
+# When setting HSV colors, remeber, that they should be scaled
+# Normal: H 0-360, S 0-100, V 0-100
+# OpenCV: H 0-180, S 0-255, V 0-255
+
+# Green
+#colorLower = (103/2-10, 150, 150)
+#colorUpper = (103/2+10, 255, 255)
+
+# Yellow
+colorLower = ((54 - 20)/2, ( 89 - 20 ) * 255/100, (74 - 50) * 255/100)
+colorUpper = ((54 + 20)/2, ( 89 + 11 ) * 255/100, (74 + 26) * 255/100)
 pts = deque(maxlen=args["buffer"])
 
 
@@ -51,7 +60,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	# construct a mask for the color "green", then perform
 	# a series of dilations and erosions to remove any small
 	# blobs left in the mask
-	mask = cv2.inRange(hsv, greenLower, greenUpper)
+	mask = cv2.inRange(hsv, colorLower, colorUpper)
 	mask = cv2.erode(mask, None, iterations=2)
 	mask = cv2.dilate(mask, None, iterations=2)	
 	
