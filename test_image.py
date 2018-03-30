@@ -6,6 +6,7 @@ import argparse
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import time
+from cv2 import VideoWriter, VideoWriter_fourcc, imread, resize
 import cv2
 
 # construct the argument parse and parse the arguments
@@ -43,6 +44,10 @@ rawCapture = PiRGBArray(camera, size=(640, 480))
 time.sleep(0.1)
 counter = 0
 saveCounter = 0
+
+# fourcc = cv2.cv.CV_FOURCC(*"XVID")
+motion_filename = "testvid.avi"
+motion_file = cv2.VideoWriter(motion_filename, cv2.VideoWriter_fourcc(*'MJPG'), 1.0, camera.resolution)
 
 # capture frames from the camera
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
@@ -108,6 +113,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	# Limit frame shown
 	# if ( counter & 0x07 ) == 0:
         cv2.imshow("Frame", image)
+        motion_file.write(image)
 	key = cv2.waitKey(1) & 0xFF
 
 	# clear the stream in preparation for the next frame
@@ -121,6 +127,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		saveCounter += 1
 	    
 # cleanup the camera and close any open windows
+motion_file.release()
 camera.release()
 cv2.destroyAllWindows()
 	    
